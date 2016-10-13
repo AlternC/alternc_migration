@@ -3,6 +3,7 @@
   tasks:
     - name: "Charger les variables de migration"
       include_vars: variables.yml
+      always_run: yes
     - name: Déclarer le serveur cible {{ target.host }} dans l'inventaire
       add_host: hostname={{ target.host }}
         ansible_ssh_user={{ target.user | default("root") }}
@@ -11,3 +12,4 @@
         ansible_ssh_pass={{ target.pass }}
         ansible_become={{ (target.user == "root") | ternary(false,true) }}
         ansible_become_pass={{ target.pass }}
+      always_run: yes
