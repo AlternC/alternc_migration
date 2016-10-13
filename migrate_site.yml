@@ -3,7 +3,7 @@
   tasks:
     - name: "Charger les variables de migration"
       include_vars: variables.yml
-    - name: Déclarer le serveur cible alternc dans l'inventaire
+    - name: Déclarer le serveur cible {{ target.host }} dans l'inventaire
       add_host: hostname={{ target.host }}
         ansible_ssh_user={{ target.user | default("root") }}
         ansible_ssh_port={{ target.port | default(22) }}
