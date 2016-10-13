@@ -6,8 +6,8 @@
       always_run: yes
     - name: Déclarer le serveur cible {{ target.host }} dans l'inventaire
       add_host: hostname={{ target.host }}
-        ansible_ssh_user={{ target.user | default("root") }}
-        ansible_ssh_port={{ target.port | default(22) }}
+        ansible_user={{ target.user | default("root") }}
+        ansible_port={{ target.port | default(22) }}
         ansible_ssh_common_args={{ target.key | ternary('',"-o PubkeyAuthentication=no -o StrictHostKeyChecking=no") }}
         ansible_ssh_pass={{ target.pass }}
         ansible_become={{ (target.user == "root") | ternary(false,true) }}
