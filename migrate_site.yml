@@ -1,0 +1,5 @@
+---
+- hosts: localhost
+  tasks:
+    - name: "Charger les variables de migration"
+      include_vars: variables.yml
