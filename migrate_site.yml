@@ -4,7 +4,24 @@
     - name: "Charger les variables de migration"
       include_vars: variables.yml
       always_run: yes
-    - name: "Deconnecter les sessions ssh"
+    - name: "Deconnecter les sessions ssh de {{ source.host }}"
+      local_action: >
+          shell ssh -O stop {{ source.host }}
+          -o ControlPath=/tmp/ansible-ssh-{{ source.user | default("root") }}-{{ source.host }}-{{ source.port | default(22) }}
+      run_once: yes
+      failed_when: >
+        socket_removal|failed
+        and "No such file or directory" not in socket_removal.stderr
+    - name: Déclarer le serveur cible {{ source.host }} dans l'inventaire
+      add_host: hostname={{ source.host }}
+        ansible_user={{ source.user | default("root") }}
+        ansible_port={{ source.port | default(22) }}
+        ansible_ssh_common_args="{% if source.key is defined and source.key %} -i {{ source.key }} {% else %} -o PubkeyAuthentication=no -o StrictHostKeyChecking=no {% endif %}"        ansible_ssh_pass={{ source.pass }}
+        ansible_ssh_pass={{ source.pass }}
+        ansible_become={{ (source.user == "root") | ternary(false,true) }}
+        ansible_become_pass={{ source.pass }}
+      always_run: yes
+    - name: "Deconnecter les sessions ssh de {{ target.host }}"
       local_action: >
           shell ssh -O stop {{ target.host }}
           -o ControlPath=/tmp/ansible-ssh-{{ target.user | default("root") }}-{{ target.host }}-{{ target.port | default(22) }}
@@ -21,6 +38,10 @@
         ansible_become={{ (target.user == "root") | ternary(false,true) }}
         ansible_become_pass={{ target.pass }}
       always_run: yes
+- hosts: "{{ hostvars.localhost.source.host }}"
+  tasks:
+    - debug: msg="Connexion au serveur cible {{ ansible_host }}"
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
+
