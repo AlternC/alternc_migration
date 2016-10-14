@@ -44,4 +44,6 @@
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
-
+    # Pour traiter les commands rsync expext est requis
+    - apt: name=python-pexpect update_cache=yes state=present
+      become: true
