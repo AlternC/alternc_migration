@@ -51,3 +51,15 @@
           --rsync-path="sudo rsync"
           {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:{{ hostvars.localhost.source.path }}/
           {{ hostvars.localhost.target.path }}
+- hosts: "{{ hostvars.localhost.source.host }}"
+  tasks:
+    - apt: name=python-mysqldb update_cache=yes state=present
+      become: true
+    - name: "Export de la base de donnée {{ hostvars.localhost.source.database.name }}"
+      mysql_db: >
+        login_user={{ hostvars.localhost.source.database.user }}
+        login_password={{ hostvars.localhost.source.database.pass }}
+        login_host={{ hostvars.localhost.source.database.host }}
+        name={{ hostvars.localhost.source.database.name }}
+        state=dump
+        target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
