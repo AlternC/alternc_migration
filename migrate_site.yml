@@ -4,6 +4,14 @@
     - name: "Charger les variables de migration"
       include_vars: variables.yml
       always_run: yes
+    - name: "Deconnecter les sessions ssh"
+      local_action: >
+          shell ssh -O stop {{ target.host }}
+          -o ControlPath=/tmp/ansible-ssh-{{ target.user | default("root") }}-{{ target.host }}-{{ target.port | default(22) }}
+      run_once: yes
+      failed_when: >
+        socket_removal|failed
+        and "No such file or directory" not in socket_removal.stderr
     - name: Déclarer le serveur cible {{ target.host }} dans l'inventaire
       add_host: hostname={{ target.host }}
         ansible_user={{ target.user | default("root") }}
