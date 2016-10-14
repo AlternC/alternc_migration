@@ -16,7 +16,8 @@
       add_host: hostname={{ target.host }}
         ansible_user={{ target.user | default("root") }}
         ansible_port={{ target.port | default(22) }}
-        ansible_ssh_common_args="{% if target.key is defined %} -i {{ target.key }} {% else %} -o PubkeyAuthentication=no -o StrictHostKeyChecking=no {% endif %}"        ansible_ssh_pass={{ target.pass }}
+        ansible_ssh_common_args="{% if target.key is defined and target.key %} -i {{ target.key }} {% else %} -o PubkeyAuthentication=no -o StrictHostKeyChecking=no {% endif %}"        ansible_ssh_pass={{ target.pass }}
+        ansible_ssh_pass={{ target.pass }}
         ansible_become={{ (target.user == "root") | ternary(false,true) }}
         ansible_become_pass={{ target.pass }}
       always_run: yes
