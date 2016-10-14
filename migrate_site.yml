@@ -9,9 +9,7 @@
           shell ssh -O stop {{ source.host }}
           -o ControlPath=/tmp/ansible-ssh-{{ source.user | default("root") }}-{{ source.host }}-{{ source.port | default(22) }}
       run_once: yes
-      failed_when: >
-        socket_removal|failed
-        and "No such file or directory" not in socket_removal.stderr
+      ignore_errors: yes
     - name: Déclarer le serveur cible {{ source.host }} dans l'inventaire
       add_host: hostname={{ source.host }}
         ansible_user={{ source.user | default("root") }}
@@ -26,9 +24,7 @@
           shell ssh -O stop {{ target.host }}
           -o ControlPath=/tmp/ansible-ssh-{{ target.user | default("root") }}-{{ target.host }}-{{ target.port | default(22) }}
       run_once: yes
-      failed_when: >
-        socket_removal|failed
-        and "No such file or directory" not in socket_removal.stderr
+      ignore_errors: yes
     - name: Déclarer le serveur cible {{ target.host }} dans l'inventaire
       add_host: hostname={{ target.host }}
         ansible_user={{ target.user | default("root") }}
