@@ -103,3 +103,11 @@
           --rsync-path="sudo rsync"
           {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:{{ hostvars.localhost.source.path }}/
           {{ hostvars.localhost.target.path }}
+- hosts: "{{ hostvars.localhost.source.host }}"
+  tasks:
+    - name: "Activer le mode proxy"
+      apache2_module: state=present name=proxy_http
+    - name: "Activation du mode proxy"
+      template: src=templates/proxy.j2 dest=/etc/apache2/conf.d/000-proxy-{{ hostvars.localhost.source.domain }}.conf
+    - name: "Relancer apache"
+      service: name=apache2 state=reloaded
