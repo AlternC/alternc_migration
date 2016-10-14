@@ -43,3 +43,11 @@
     # Pour traiter les commands rsync expext est requis
     - apt: name=sshpass update_cache=yes state=present
       become: true
+    - name: Importer les données depuis la source
+      command:
+        sshpass -p {{ hostvars.localhost.source.pass }}
+        rsync --partial -az --progress
+          -e "ssh -p {{ hostvars.localhost.source.port }}"
+          --rsync-path="sudo rsync"
+          {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:{{ hostvars.localhost.source.path }}/
+          {{ hostvars.localhost.target.path }}
