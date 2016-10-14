@@ -53,6 +53,18 @@
           {{ hostvars.localhost.target.path }}
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
+    - name: Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}
+      copy: src=templates/maintenance.html dest={{ hostvars.localhost.source.path }}/maintenance.html
+    - name: "Activation de la maintenance 1/2"
+      lineinfile:
+        dest: "{{ hostvars.localhost.source.path }}/.htaccess"
+        line: "RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f"
+        insertbefore: BOF
+    - name: "Activation de la maintenance 2/2"
+      lineinfile:
+        dest: "{{ hostvars.localhost.source.path }}/.htaccess"
+        line: "RewriteRule . maintenance.html [L]"
+        insertafter: "RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f"
     - apt: name=python-mysqldb update_cache=yes state=present
       become: true
     - name: "Export de la base de donnée {{ hostvars.localhost.source.database.name }}"
@@ -63,8 +75,6 @@
         name={{ hostvars.localhost.source.database.name }}
         state=dump
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
-    - name: Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}
-      copy: src=templates/maintenance.html dest={{ hostvars.localhost.source.path }}/maintenance.html
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - name: Importer la base de données
