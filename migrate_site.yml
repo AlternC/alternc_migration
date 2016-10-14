@@ -110,6 +110,8 @@
         regexp: '^(.*)({{ hostvars.localhost.source.path }})(.*)$'
         line: '\1{{ hostvars.localhost.target.path }}\3'
         backrefs: yes
+    - name: Corriger les droits sur le repertoire
+      command: /usr/lib/alternc/fixperms.sh
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - name: "Activer le mode proxy"
