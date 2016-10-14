@@ -103,6 +103,13 @@
           --rsync-path="sudo rsync"
           {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:{{ hostvars.localhost.source.path }}/
           {{ hostvars.localhost.target.path }}
+    - name: Corriger les chemins dans le htaccess
+      lineinfile:
+        dest: "{{ hostvars.localhost.target.path }}/.htaccess"
+        backup: yes
+        regexp: '^(.*)({{ hostvars.localhost.source.path }})(.*)$'
+        line: '\1{{ hostvars.localhost.target.path }}\3'
+        backrefs: yes
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - name: "Activer le mode proxy"
