@@ -63,6 +63,8 @@
         name={{ hostvars.localhost.source.database.name }}
         state=dump
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
+    - name: Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}
+      copy: src=templates/maintenance.html dest={{ hostvars.localhost.source.path }}/maintenance.html
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - name: Importer la base de données
