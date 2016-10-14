@@ -20,3 +20,6 @@
         ansible_become={{ (target.user == "root") | ternary(false,true) }}
         ansible_become_pass={{ target.pass }}
       always_run: yes
+- hosts: "{{ hostvars.localhost.target.host }}"
+  tasks:
+    - debug: msg="Connexion au serveur cible {{ ansible_host }}"
