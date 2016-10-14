@@ -83,3 +83,11 @@
         name={{ hostvars.localhost.target.database.name }}
         state=import
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
+    - name: Importer les données manquante depuis la source
+      command:
+        sshpass -p {{ hostvars.localhost.source.pass }}
+        rsync --partial -az --progress
+          -e "ssh -p {{ hostvars.localhost.source.port }}"
+          --rsync-path="sudo rsync"
+          {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:{{ hostvars.localhost.source.path }}/
+          {{ hostvars.localhost.target.path }}
