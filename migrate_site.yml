@@ -117,6 +117,12 @@
         regexp: '^(.*)({{ hostvars.localhost.source.path }})(.*)$'
         line: '\1{{ hostvars.localhost.target.path }}\3'
         backrefs: yes
+    - name: Corriger la connexion a la db
+      include: "{{ item }}"
+      with_first_found:
+        - files:
+            - tasks/{{ hostvars.localhost.source.cms }}_db.yml
+          skip: true
     - name: Corriger les droits sur le repertoire
       command: /usr/lib/alternc/fixperms.sh
 - hosts: "{{ hostvars.localhost.source.host }}"
