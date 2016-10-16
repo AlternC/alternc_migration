@@ -1,0 +1,10 @@
+---
+
+- name: Importer les données depuis la source
+  command:
+    sshpass -p {{ source.pass }}
+    rsync --partial -az --progress
+      -e "ssh -p {{ source.port }}"
+      --rsync-path="sudo rsync"
+      {{ source.user }}@{{ source.host }}:{{ source.path }}
+      {{ target.path }}

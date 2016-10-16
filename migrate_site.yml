@@ -43,14 +43,16 @@
     # Pour traiter les commands rsync expext est requis
     - apt: name=sshpass update_cache=yes state=present
       become: true
-    - name: Importer les données depuis la source
-      command:
-        sshpass -p {{ hostvars.localhost.source.pass }}
-        rsync --partial -az --progress
-          -e "ssh -p {{ hostvars.localhost.source.port }}"
-          --rsync-path="sudo rsync"
-          {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:{{ hostvars.localhost.source.path }}/
-          {{ hostvars.localhost.target.path }}
+    - include: tasks/rsync.yml
+      vars:
+        source:
+          pass: "{{ hostvars.localhost.source.pass }}"
+          port: "{{ hostvars.localhost.source.port }}"
+          user: "{{ hostvars.localhost.source.user }}"
+          host: "{{ hostvars.localhost.source.host }}"
+          path: "{{ hostvars.localhost.source.path }}"
+        target:
+          path: "{{ hostvars.localhost.target.path }}"
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - name: Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}
@@ -77,14 +79,16 @@
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
-    - name: Importer la base de données
-      command:
-        sshpass -p {{ hostvars.localhost.source.pass }}
-        rsync --partial -az --progress
-          -e "ssh -p {{ hostvars.localhost.source.port }}"
-          --rsync-path="sudo rsync"
-          {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:/tmp/{{ hostvars.localhost.source.database.name }}.sql
-          /tmp/{{ hostvars.localhost.source.database.name }}.sql
+    - include: tasks/rsync.yml
+      vars:
+        source:
+          pass: "{{ hostvars.localhost.source.pass }}"
+          port: "{{ hostvars.localhost.source.port }}"
+          user: "{{ hostvars.localhost.source.user }}"
+          host: "{{ hostvars.localhost.source.host }}"
+          path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
+        target:
+          path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
     - apt: name=python-mysqldb update_cache=yes state=present
       become: true
     - mysql_db: >
@@ -96,13 +100,16 @@
         state=import
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
     - name: Importer les données manquante depuis la source
-      command:
-        sshpass -p {{ hostvars.localhost.source.pass }}
-        rsync --partial -az --progress
-          -e "ssh -p {{ hostvars.localhost.source.port }}"
-          --rsync-path="sudo rsync"
-          {{ hostvars.localhost.source.user }}@{{ hostvars.localhost.source.host }}:{{ hostvars.localhost.source.path }}/
-          {{ hostvars.localhost.target.path }}
+      include: tasks/rsync.yml
+      vars:
+        source:
+          pass: "{{ hostvars.localhost.source.pass }}"
+          port: "{{ hostvars.localhost.source.port }}"
+          user: "{{ hostvars.localhost.source.user }}"
+          host: "{{ hostvars.localhost.source.host }}"
+          path: "{{ hostvars.localhost.source.path }}"
+        target:
+          path: "{{ hostvars.localhost.target.path }}"
     - name: Corriger les chemins dans le htaccess
       lineinfile:
         dest: "{{ hostvars.localhost.target.path }}/.htaccess"
