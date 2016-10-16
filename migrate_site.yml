@@ -4,36 +4,8 @@
     - name: "Charger les variables de migration"
       include_vars: variables.yml
       always_run: yes
-    - name: "Deconnecter les sessions ssh de {{ source.host }}"
-      local_action: >
-          shell ssh -O stop {{ source.host }}
-          -o ControlPath=/tmp/ansible-ssh-{{ source.user | default("root") }}-{{ source.host }}-{{ source.port | default(22) }}
-      run_once: yes
-      ignore_errors: yes
-    - name: Déclarer le serveur cible {{ source.host }} dans l'inventaire
-      add_host: hostname={{ source.host }}
-        ansible_user={{ source.user | default("root") }}
-        ansible_port={{ source.port | default(22) }}
-        ansible_ssh_common_args="{% if source.key is defined and source.key %} -i {{ source.key }} {% else %} -o PubkeyAuthentication=no -o StrictHostKeyChecking=no {% endif %}"        ansible_ssh_pass={{ source.pass }}
-        ansible_ssh_pass={{ source.pass }}
-        ansible_become={{ (source.user == "root") | ternary(false,true) }}
-        ansible_become_pass={{ source.pass }}
-      always_run: yes
-    - name: "Deconnecter les sessions ssh de {{ target.host }}"
-      local_action: >
-          shell ssh -O stop {{ target.host }}
-          -o ControlPath=/tmp/ansible-ssh-{{ target.user | default("root") }}-{{ target.host }}-{{ target.port | default(22) }}
-      run_once: yes
-      ignore_errors: yes
-    - name: Déclarer le serveur cible {{ target.host }} dans l'inventaire
-      add_host: hostname={{ target.host }}
-        ansible_user={{ target.user | default("root") }}
-        ansible_port={{ target.port | default(22) }}
-        ansible_ssh_common_args="{% if target.key is defined and target.key %} -i {{ target.key }} {% else %} -o PubkeyAuthentication=no -o StrictHostKeyChecking=no {% endif %}"        ansible_ssh_pass={{ target.pass }}
-        ansible_ssh_pass={{ target.pass }}
-        ansible_become={{ (target.user == "root") | ternary(false,true) }}
-        ansible_become_pass={{ target.pass }}
-      always_run: yes
+    - include: tasks/add_host.yml server={{ source }}
+    - include: tasks/add_host.yml server={{ target }}
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"

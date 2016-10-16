@@ -1,0 +1,16 @@
+---
+- name: "Deconnecter les sessions ssh de {{ server.host }}"
+  local_action: >
+      shell ssh -O stop {{ server.host }}
+      -o ControlPath=/tmp/ansible-ssh-{{ server.user | default("root") }}-{{ server.host }}-{{ server.port | default(22) }}
+  run_once: yes
+  ignore_errors: yes
+- name: Déclarer le serveur {{ server.host }} dans l'inventaire
+  add_host: hostname={{ server.host }}
+    ansible_user={{ server.user | default("root") }}
+    ansible_port={{ server.port | default(22) }}
+    ansible_ssh_common_args="{% if server.key is defined and server.key %} -i {{ server.key }} {% else %} -o PubkeyAuthentication=no -o StrictHostKeyChecking=no {% endif %}"        ansible_ssh_pass={{ server.pass }}
+    ansible_ssh_pass={{ server.pass }}
+    ansible_become={{ (server.user == "root") | ternary(false,true) }}
+    ansible_become_pass={{ server.pass }}
+  always_run: yes
