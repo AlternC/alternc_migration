@@ -9,12 +9,17 @@
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
+    - apt: name=python-mysqldb update_cache=yes state=present
+      become: true
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
-    # Pour traiter les commands rsync expext est requis
+    - apt: name=python-mysqldb update_cache=yes state=present
+      become: true
     - apt: name=sshpass update_cache=yes state=present
       become: true
+    - name: "Activer le mode proxy"
+      apache2_module: state=present name=proxy_http
     - include: tasks/rsync.yml
       vars:
         source:
@@ -39,8 +44,6 @@
         dest: "{{ hostvars.localhost.source.path }}/.htaccess"
         line: "RewriteRule . maintenance.html [L]"
         insertafter: "RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f"
-    - apt: name=python-mysqldb update_cache=yes state=present
-      become: true
     - name: "Export de la base de donnée {{ hostvars.localhost.source.database.name }}"
       mysql_db: >
         login_user={{ hostvars.localhost.source.database.user }}
@@ -61,8 +64,6 @@
           path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
         target:
           path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
-    - apt: name=python-mysqldb update_cache=yes state=present
-      become: true
     - mysql_db: >
         config_file=""
         login_user={{ hostvars.localhost.target.database.user }}
@@ -99,8 +100,6 @@
       command: /usr/lib/alternc/fixperms.sh
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
-    - name: "Activer le mode proxy"
-      apache2_module: state=present name=proxy_http
     - name: "Activation du mode proxy"
       template: src=templates/proxy.j2 dest=/etc/apache2/conf.d/000-proxy-{{ hostvars.localhost.source.domain }}.conf
     - name: "Relancer apache"
