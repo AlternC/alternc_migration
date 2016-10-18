@@ -27,7 +27,7 @@
           port: "{{ hostvars.localhost.source.port }}"
           user: "{{ hostvars.localhost.source.user }}"
           host: "{{ hostvars.localhost.source.host }}"
-          path: "{{ hostvars.localhost.source.path }}"
+          path: "{{ hostvars.localhost.source.path }}/"
         target:
           path: "{{ hostvars.localhost.target.path }}"
 - hosts: "{{ hostvars.localhost.source.host }}"
@@ -77,7 +77,7 @@
           port: "{{ hostvars.localhost.source.port }}"
           user: "{{ hostvars.localhost.source.user }}"
           host: "{{ hostvars.localhost.source.host }}"
-          path: "{{ hostvars.localhost.source.path }}"
+          path: "{{ hostvars.localhost.source.path }}/"
         target:
           path: "{{ hostvars.localhost.target.path }}"
     - name: Corriger les chemins dans le htaccess
