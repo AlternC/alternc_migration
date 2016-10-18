@@ -11,6 +11,8 @@
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
     - apt: name=python-mysqldb update_cache=yes state=present
       become: true
+    - name: "Activer le mode proxy"
+      apache2_module: state=present name=proxy_http
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
@@ -18,8 +20,6 @@
       become: true
     - apt: name=sshpass update_cache=yes state=present
       become: true
-    - name: "Activer le mode proxy"
-      apache2_module: state=present name=proxy_http
     - include: tasks/rsync.yml
       vars:
         source:
