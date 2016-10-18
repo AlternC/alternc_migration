@@ -89,6 +89,9 @@
         backrefs: yes
     - name: Corriger la connexion a la db
       include: "{{ item }}"
+      vars:
+        path: "{{ hostvars.localhost.target.path }}"
+        database: "{{ hostvars.localhost.target.database }}"
       with_first_found:
         - files:
             - tasks/{{ hostvars.localhost.source.cms }}_db.yml
