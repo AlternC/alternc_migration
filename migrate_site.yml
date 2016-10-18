@@ -80,13 +80,10 @@
           path: "{{ hostvars.localhost.source.path }}/"
         target:
           path: "{{ hostvars.localhost.target.path }}"
-    - name: Corriger les chemins dans le htaccess
-      lineinfile:
-        dest: "{{ hostvars.localhost.target.path }}/.htaccess"
-        backup: yes
-        regexp: '^(.*)({{ hostvars.localhost.source.path }})(.*)$'
-        line: '\1{{ hostvars.localhost.target.path }}\3'
-        backrefs: yes
+    - name: Corriger tous les appels aux anciens chemin avec le nouveau
+      command: find . -type f -exec sed -i 's#{{ hostvars.localhost.source.path }}/#{{ hostvars.localhost.target.path }}/#g' {} +
+      args:
+        chdir: "{{ hostvars.localhost.target.path }}/"
     - name: Corriger la connexion a la db
       include: "{{ item }}"
       vars:
