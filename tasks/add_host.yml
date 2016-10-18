@@ -5,7 +5,7 @@
       -o ControlPath=/tmp/ansible-ssh-{{ server.user | default("root") }}-{{ server.host }}-{{ server.port | default(22) }}
   run_once: yes
   ignore_errors: yes
-- name: Déclarer le serveur {{ server.host }} dans l'inventaire
+- name: "Ajouter le serveur {{ server.host }} dans l'inventaire"
   add_host: hostname={{ server.host }}
     ansible_user={{ server.user | default("root") }}
     ansible_port={{ server.port | default(22) }}

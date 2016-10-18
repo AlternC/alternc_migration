@@ -1,6 +1,6 @@
 ---
 
-- name: Importer les données depuis la source
+- name: "Importer le repertoire/fichier depuis la source"
   command:
     sshpass -p {{ source.pass }}
     rsync --partial -az --progress

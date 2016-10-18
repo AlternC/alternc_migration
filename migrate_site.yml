@@ -32,7 +32,7 @@
           path: "{{ hostvars.localhost.target.path }}"
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
-    - name: Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}
+    - name: "Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}"
       copy: src=templates/maintenance.html dest={{ hostvars.localhost.source.path }}/maintenance.html
     - name: "Activation de la maintenance"
       blockinfile:
@@ -41,7 +41,7 @@
           RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f
           RewriteRule . maintenance.html [L]
         insertbefore: BOF
-    - name: "Export de la base de donnée {{ hostvars.localhost.source.database.name }}"
+    - name: "Export de la base mysql  {{ hostvars.localhost.source.database.name }}"
       mysql_db: >
         login_user={{ hostvars.localhost.source.database.user }}
         login_password={{ hostvars.localhost.source.database.pass }}
@@ -69,7 +69,7 @@
         name={{ hostvars.localhost.target.database.name }}
         state=import
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
-    - name: Importer les données manquante depuis la source
+    - name: "Synchroniser les informations manquantes depuis l'import initial"
       include: tasks/rsync.yml
       vars:
         source:
@@ -80,11 +80,11 @@
           path: "{{ hostvars.localhost.source.path }}/"
         target:
           path: "{{ hostvars.localhost.target.path }}"
-    - name: Corriger tous les appels aux anciens chemin avec le nouveau
+    - name: "Corriger tous les appels aux anciens chemin avec le nouveau"
       command: find . -type f -exec sed -i 's#{{ hostvars.localhost.source.path }}/#{{ hostvars.localhost.target.path }}/#g' {} +
       args:
         chdir: "{{ hostvars.localhost.target.path }}/"
-    - name: Corriger la connexion a la db
+    - name: "Corriger la connexion a la db"
       include: "{{ item }}"
       vars:
         path: "{{ hostvars.localhost.target.path }}"
@@ -93,7 +93,7 @@
         - files:
             - tasks/{{ hostvars.localhost.source.cms }}_db.yml
           skip: true
-    - name: Corriger les droits sur le repertoire
+    - name: "Corriger les droits sur le repertoire"
       command: /usr/lib/alternc/fixperms.sh
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
