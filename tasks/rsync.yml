@@ -1,10 +1,12 @@
 ---
-
+# Activer sudo que si non root
+# Activer sshpass que si mot de passe fourni
 - name: "Importer le repertoire/fichier depuis la source"
-  command:
-    sshpass -p {{ source.pass }}
+  command: "
+    {% if source.pass is defined and source.pass %} sshpass -p {{ source.pass }} {% endif %}
     rsync --partial -az --progress
-      -e "ssh -p {{ source.port }}"
-      --rsync-path="sudo rsync"
+      -e 'ssh -p {{ source.port }}'
+      --rsync-path='sudo rsync'
       {{ source.user }}@{{ source.host }}:{{ source.path }}
       {{ target.path }}
+  "
