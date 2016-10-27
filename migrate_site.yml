@@ -6,6 +6,8 @@
       always_run: yes
     - include: tasks/add_host.yml server={{ source }}
     - include: tasks/add_host.yml server={{ target }}
+    - debug: msg="Migration de {{ source.domain }}"
+    - pause: prompt="Are you sur to continue ? "
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
