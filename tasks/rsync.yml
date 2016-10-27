@@ -6,7 +6,7 @@
     {% if source.pass is defined and source.pass %} sshpass -p {{ source.pass }} {% endif %}
     rsync --partial -az --progress
       -e 'ssh -p {{ source.port }}'
-      --rsync-path='sudo rsync'
+      {% if source.user is defined and source.pass != 'root' %} --rsync-path='sudo rsync' {% endif %}
       {{ source.user }}@{{ source.host }}:{{ source.path }}
       {{ target.path }}
   "
