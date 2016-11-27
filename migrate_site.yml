@@ -99,7 +99,7 @@
             - tasks/{{ hostvars.localhost.source.cms }}_db.yml
           skip: true
     - name: "Corriger les droits sur le repertoire"
-      command: /usr/lib/alternc/fixperms.sh
+      command: /usr/lib/alternc/fixperms.sh -l {{ hostvars.localhost.target.alternc }}
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - name: "Activation du mode proxy"
