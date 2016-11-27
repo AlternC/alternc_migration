@@ -1,0 +1,5 @@
+- name: Correction du connecteur mysql (spip)
+  lineinfile:
+    dest: "{{ path }}/config/connect.php"
+    regexp: "spip_connect_db"
+    line: "spip_connect_db('{{ database.host }}','','{{ database.user }}','{{ database.pass }}','{{ database.name }}','mysql','spip','');"
