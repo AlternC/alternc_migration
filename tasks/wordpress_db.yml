@@ -1,0 +1,13 @@
+- name: Connexion à la nouvelle base de données
+  lineinfile:
+    dest: "{{ path }}/wp-config.php"
+    regexp: "{{ rule.regexp }}"
+    line: "{{ rule.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: "DB_HOST", line: "define('DB_HOST','{{ database.host }}');" }
+    - { regexp: "DB_USER", line: "define('DB_USER', '{{ database.user }}');" }
+    - { regexp: "DB_PASSWORD", line: "define('DB_PASSWORD', '{{ database.pass }}');" }
+    - { regexp: "DB_NAME", line: "define('DB_NAME', '{{ database.name }}');" }
+  loop_control:
+    loop_var: rule
