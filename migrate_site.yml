@@ -36,10 +36,13 @@
   tasks:
     - name: "Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}"
       copy: src=templates/maintenance.html dest={{ hostvars.localhost.source.path }}/maintenance.html
+    - name: "Creer le htaccess si absent"
+      file: path={{ hostvars.localhost.source.path }}/.htaccess state=touch
     - name: "Activation de la maintenance"
       blockinfile:
         dest: "{{ hostvars.localhost.source.path }}/.htaccess"
         block: |
+          RewriteEngine on
           RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f
           RewriteRule . maintenance.html [L]
         insertbefore: BOF
