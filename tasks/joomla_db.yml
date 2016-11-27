@@ -1,0 +1,13 @@
+- name: Correction du connecteur mysql (joomla)
+  lineinfile:
+    dest: "{{ path }}/configuration.php"
+    regexp: "{{ rule.regexp }}"
+    line: "{{ rule.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: '^(\s*public\s+\$host\s*=)', line: '\1 "{{ database.host }}";' }
+    - { regexp: '^(\s*public\s+\$user\s*=)', line: '\1 "{{ database.user }}";' }
+    - { regexp: '^(\s*public\s+\$password\s*=)', line: '\1 "{{ database.pass }}";' }
+    - { regexp: '^(\s*public\s+\$db\s*=)', line: '\1 "{{ database.name }}";' }
+  loop_control:
+    loop_var: rule
