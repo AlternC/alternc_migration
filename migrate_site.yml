@@ -43,8 +43,8 @@
         dest: "{{ hostvars.localhost.source.path }}/.htaccess"
         block: |
           RewriteEngine on
-          RewriteCond %{DOCUMENT_ROOT}/maintenance.html -f
-          RewriteRule . maintenance.html [L]
+          RewriteRule .* maintenance.html [L,R=503]
+          ErrorDocument 503 "Site en maintenance"
         insertbefore: BOF
     - name: "Export de la base mysql  {{ hostvars.localhost.source.database.name }}"
       mysql_db: >
