@@ -3,7 +3,7 @@
   tasks:
     - name: "Charger les variables de migration"
       include_vars: variables.yml
-      always_run: yes
+      check_mode: no
     - include: tasks/add_host.yml server={{ source }}
     - include: tasks/add_host.yml server={{ target }}
     - debug: msg="Migration de {{ source.domain }}"
