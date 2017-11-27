@@ -13,4 +13,4 @@
     ansible_ssh_pass={{ server.pass }}
     ansible_become={{ (server.user == "root") | ternary(false,true) }}
     ansible_become_pass={{ server.pass }}
-  always_run: yes
+  check_mode: no
