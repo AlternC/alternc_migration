@@ -67,6 +67,10 @@
           path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
         target:
           path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
+    - name: "Corriger les DEFINER SQL"
+      command: sed -i 's#DEFINER.*DEFINER##g' /tmp/{{ hostvars.localhost.source.database.name }}.sql
+      args:
+        chdir: "/tmp/"
     - mysql_db: >
         config_file=""
         login_user={{ hostvars.localhost.target.database.user }}
