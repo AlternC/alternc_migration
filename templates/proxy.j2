@@ -1,0 +1,19 @@
+<VirtualHost *:80>
+        ServerName {{ hostvars.localhost.source.domain }}
+
+        ProxyPreserveHost On
+        ProxyPass / http://{{ hostvars.localhost.target.host }}/
+        ProxyPassReverse / http://{{ hostvars.localhost.target.host }}/
+</VirtualHost>
+
+{% if hostvars.localhost.source.ssl is defined %}
+<VirtualHost *:443>
+        ServerName {{ hostvars.localhost.source.domain }}
+
+        Include /var/ssl/cfmevent.com/www.cfmevent.com.conf
+
+        ProxyPreserveHost On
+        ProxyPass / http://{{ hostvars.localhost.target.host }}/
+        ProxyPassReverse / http://{{ hostvars.localhost.source.domain }}/
+</VirtualHost>
+{% endif %}
