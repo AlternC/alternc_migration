@@ -78,6 +78,7 @@
         login_host={{ hostvars.localhost.target.database.host }}
         name={{ hostvars.localhost.target.database.name }}
         state=import
+        single_transaction=yes
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
     - name: "Synchroniser les informations manquantes depuis l'import initial"
       include: tasks/rsync.yml
