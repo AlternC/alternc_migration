@@ -1,6 +1,6 @@
 ---
 #Commentaires
-# Requi : variable.yml , fourni les arguments d'import / export
+# Requis : variables.yml , fourni les arguments d'import / export
 #ansible-playbook migrate_site.yml
 
 - hosts: localhost
