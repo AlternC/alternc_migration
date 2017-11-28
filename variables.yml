@@ -1,0 +1,28 @@
+---
+source:
+  domain: domain
+  cms: [spip,joomla,wp]
+  host: [alternc_host or IP]
+  port:
+  user:
+  key:
+  pass: required
+  path: absolute_path
+  database:
+    host: 127.0.0.1
+    user:
+    pass:
+    name:
+target:
+  host: [alternc_host or IP]
+  port:
+  user:
+  key:
+  pass:
+  path: absolute_path
+  alternc: alternc_account
+  database:
+    host: 127.0.0.1
+    user:
+    pass:
+    name:
