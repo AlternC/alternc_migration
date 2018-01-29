@@ -57,6 +57,7 @@
         login_password={{ hostvars.localhost.source.database.pass }}
         login_host={{ hostvars.localhost.source.database.host }}
         name={{ hostvars.localhost.source.database.name }}
+        config_file=/dev/null
         state=dump
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
 - hosts: "{{ hostvars.localhost.target.host }}"
@@ -81,6 +82,7 @@
         login_password={{ hostvars.localhost.target.database.pass }}
         login_host={{ hostvars.localhost.target.database.host }}
         name={{ hostvars.localhost.target.database.name }}
+        config_file=/dev/null
         state=import
         single_transaction=yes
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
