@@ -1,5 +1,6 @@
 <VirtualHost *:80>
         ServerName {{ hostvars.localhost.source.domain }}
+        ServerAlias {{ hostvars.localhost.source.domain | regex_replace('^www\.(.*)$', '\\1') }}
 
         ProxyPreserveHost On
         ProxyPass / http://{{ hostvars.localhost.target.host }}/
