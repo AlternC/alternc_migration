@@ -114,7 +114,19 @@
       command: /usr/lib/alternc/fixperms.sh -l {{ hostvars.localhost.target.alternc }}
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
-    - name: "Activation du mode proxy"
+    - stat:
+        path: /etc/apache2/conf.d
+      register: apache2confd
+    - stat:
+        path: /etc/apache2/conf-enabled
+      register: apache2confenabled
+
+    - name: "Activation du mode proxy : conf.d"
       template: src=templates/proxy.j2 dest=/etc/apache2/conf.d/000-proxy-{{ hostvars.localhost.source.domain }}.conf
+      when: apache2confd.stat.isdir is defined and apache2confd.stat.isdir
+    - name: "Activation du mode proxy : conf-enabled"
+      template: src=templates/proxy.j2 dest=/etc/apache2/conf-enabled/000-proxy-{{ hostvars.localhost.source.domain }}.conf
+      when: apache2confenabled.stat.isdir is defined and apache2confenabled.stat.isdir
+
     - name: "Relancer apache"
       service: name=apache2 state=reloaded
