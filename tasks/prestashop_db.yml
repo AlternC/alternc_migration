@@ -1,0 +1,13 @@
+- name: Connexion à la nouvelle base de données
+  lineinfile:
+    dest: "{{ path }}/config/settings.inc.php"
+    regexp: "{{ rule.regexp }}"
+    line: "{{ rule.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: "_DB_SERVER_", line: "define('_DB_SERVER_','{{ database.host }}');" }
+    - { regexp: "_DB_USER_", line: "define('_DB_USER_', '{{ database.user }}');" }
+    - { regexp: "_DB_PASSWD_", line: "define('_DB_PASSWD_', '{{ database.pass }}');" }
+    - { regexp: "_DB_NAME_", line: "define('_DB_NAME_', '{{ database.name }}');" }
+  loop_control:
+    loop_var: rule
