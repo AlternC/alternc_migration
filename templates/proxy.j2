@@ -10,11 +10,21 @@
 {% if hostvars.localhost.source.ssl is defined %}
 <VirtualHost *:443>
         ServerName {{ hostvars.localhost.source.domain }}
+        ServerAlias {{ hostvars.localhost.source.domain | regex_replace('^www\.(.*)$', '\\1') }}
 
-        Include /var/ssl/cfmevent.com/www.cfmevent.com.conf
+        SSLEngine On
+        SSLCertificateFile /etc/letsencrypt/live/{{ hostvars.localhost.source.domain }}/cert.pem
+        SSLCertificateKeyFile /etc/letsencrypt/live/{{ hostvars.localhost.source.domain }}/privkey.pem
+        SSLCertificateChainFile /etc/letsencrypt/live/{{ hostvars.localhost.source.domain }}/fullchain.pem
+
+        SSLProxyEngine on
+        SSLProxyVerify none
+        SSLProxyCheckPeerCN off
+        SSLProxyCheckPeerName off
+        SSLProxyCheckPeerExpire off
 
         ProxyPreserveHost On
-        ProxyPass / http://{{ hostvars.localhost.target.host }}/
-        ProxyPassReverse / http://{{ hostvars.localhost.source.domain }}/
+        ProxyPass / https://{{ hostvars.localhost.target.host }}/
+        ProxyPassReverse / https://{{ hostvars.localhost.source.domain }}/
 </VirtualHost>
 {% endif %}
