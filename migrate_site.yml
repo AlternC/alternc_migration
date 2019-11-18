@@ -35,7 +35,7 @@
           host: "{{ hostvars.localhost.source.host }}"
           path: "{{ hostvars.localhost.source.path }}/"
         target:
-          path: "{{ hostvars.localhost.target.path }}"
+          path: "{{ hostvars.localhost.target.path | default(hostvars.localhost.source.path) }}"
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - name: "Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}"
@@ -78,10 +78,10 @@
         chdir: "/tmp/"
     - mysql_db: >
         config_file=""
-        login_user={{ hostvars.localhost.target.database.user }}
+        login_user={{ hostvars.localhost.target.database.user | default(hostvars.localhost.source.database.user) }}
         login_password={{ hostvars.localhost.target.database.pass }}
-        login_host={{ hostvars.localhost.target.database.host }}
-        name={{ hostvars.localhost.target.database.name }}
+        login_host={{ hostvars.localhost.target.database.host | default(hostvars.localhost.source.database.host) }}
+        name={{ hostvars.localhost.target.database.name | default(hostvars.localhost.source.database.name) }}
         config_file=/dev/null
         state=import
         single_transaction=yes
@@ -96,16 +96,17 @@
           host: "{{ hostvars.localhost.source.host }}"
           path: "{{ hostvars.localhost.source.path }}/"
         target:
-          path: "{{ hostvars.localhost.target.path }}"
+          path: "{{ hostvars.localhost.target.path | default(hostvars.localhost.source.path) }}"
     - name: "Corriger tous les appels aux anciens chemin avec le nouveau"
       command: find . -type f -exec sed -i 's#{{ hostvars.localhost.source.path }}/#{{ hostvars.localhost.target.path }}/#g' {} +
       args:
         chdir: "{{ hostvars.localhost.target.path }}/"
+      when: hostvars.localhost.target.path is defined
     - name: "Corriger la connexion a la db"
       include: "{{ item }}"
       vars:
-        path: "{{ hostvars.localhost.target.path }}"
-        database: "{{ hostvars.localhost.target.database }}"
+        path: "{{ hostvars.localhost.target.path | default(hostvars.localhost.source.path) }}"
+        database: "{{ hostvars.localhost.source.database | combine(hostvars.localhost.target.database) }}"
       with_first_found:
         - files:
             - tasks/{{ hostvars.localhost.source.cms }}_db.yml
