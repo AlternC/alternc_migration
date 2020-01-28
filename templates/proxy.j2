@@ -25,6 +25,6 @@
 
         ProxyPreserveHost On
         ProxyPass / https://{{ hostvars.localhost.target.host }}/
-        ProxyPassReverse / https://{{ hostvars.localhost.source.domain }}/
+        ProxyPassReverse / https://{{ hostvars.localhost.target.host }}/
 </VirtualHost>
 {% endif %}

@@ -7,7 +7,7 @@
     {% if source.pass is defined and source.pass %} sshpass -p {{ source.pass }} {% endif %}
     rsync --partial -az --progress
       -e 'ssh -p {{ source.port }} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
-      {% if source.user is defined and source.pass != 'root' %} --rsync-path='sudo rsync' {% endif %}
+      {% if source.user is defined and source.user != 'root' %} --rsync-path='sudo rsync' {% endif %}
       {{ source.user }}@{{ source.host }}:{{ source.path }}
       {{ target.path }}
   "
