@@ -24,7 +24,9 @@
         SSLProxyEngine on
         SSLProxyVerify none
         SSLProxyCheckPeerCN off
+{% if apache_version.stdout is version('2.4', '>=') %}
         SSLProxyCheckPeerName off
+{% endif %}
         SSLProxyCheckPeerExpire off
 
         ProxyPreserveHost On

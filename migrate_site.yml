@@ -126,14 +126,15 @@
     - stat:
         path: /etc/apache2/conf-enabled
       register: apache2confenabled
-
+    - name: Fetch Apache version
+      shell: apache2ctl -v |head -n 1 |sed 's/[^[:digit:]\.]//g'
+      register: apache_version
     - name: "Activation du mode proxy : conf.d"
       template: src=templates/proxy.j2 dest=/etc/apache2/conf.d/000-proxy-{{ hostvars.localhost.source.domain }}.conf
       when: apache2confd.stat.isdir is defined and apache2confd.stat.isdir
     - name: "Activation du mode proxy : conf-enabled"
       template: src=templates/proxy.j2 dest=/etc/apache2/conf-enabled/000-proxy-{{ hostvars.localhost.source.domain }}.conf
       when: apache2confenabled.stat.isdir is defined and apache2confenabled.stat.isdir
-
     - name: "Relancer apache"
       service: name=apache2 state=reloaded
       when: ansible_distribution == 'Debian'
