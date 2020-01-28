@@ -1,6 +1,8 @@
 <VirtualHost *:80>
         ServerName {{ hostvars.localhost.source.domain }}
-        ServerAlias {{ hostvars.localhost.source.domain | regex_replace('^www\.(.*)$', '\\1') }}
+{% for alias in hostvars.localhost.source.alias %}
+        ServerAlias {{ alias }}
+{% endfor %}
 
         ProxyPreserveHost On
         ProxyPass / http://{{ hostvars.localhost.target.host }}/
@@ -10,7 +12,9 @@
 {% if hostvars.localhost.source.ssl is defined %}
 <VirtualHost *:443>
         ServerName {{ hostvars.localhost.source.domain }}
-        ServerAlias {{ hostvars.localhost.source.domain | regex_replace('^www\.(.*)$', '\\1') }}
+{% for alias in hostvars.localhost.source.alias %}
+        ServerAlias {{ alias }}
+{% endfor %}
 
         SSLEngine On
         SSLCertificateFile /etc/letsencrypt/live/{{ hostvars.localhost.source.domain }}/cert.pem
