@@ -10,7 +10,7 @@
     ansible_user={{ server.user | default("root") }}
     ansible_port={{ server.port | default(22) }}
     ansible_ssh_common_args="{% if server.key is defined and server.key %} -i {{ server.key }} {% else %} -o PubkeyAuthentication=no -o StrictHostKeyChecking=no {% endif %}"
-    ansible_ssh_pass={{ server.pass }}
+    ansible_ssh_pass={{ server.pass|default(omit) }}
     ansible_become={{ (server.user == "root") | ternary(false,true) }}
-    ansible_become_pass={{ server.pass }}
+    ansible_become_pass={{ server.pass|default(omit) }}
   check_mode: no

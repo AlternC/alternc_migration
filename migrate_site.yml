@@ -29,7 +29,7 @@
     - include: tasks/rsync.yml
       vars:
         source:
-          pass: "{{ hostvars.localhost.source.pass }}"
+          pass: "{{ hostvars.localhost.source.pass|default(omit) }}"
           port: "{{ hostvars.localhost.source.port }}"
           user: "{{ hostvars.localhost.source.user }}"
           host: "{{ hostvars.localhost.source.host }}"
@@ -65,7 +65,7 @@
     - include: tasks/rsync.yml
       vars:
         source:
-          pass: "{{ hostvars.localhost.source.pass }}"
+          pass: "{{ hostvars.localhost.source.pass|default(omit) }}"
           port: "{{ hostvars.localhost.source.port }}"
           user: "{{ hostvars.localhost.source.user }}"
           host: "{{ hostvars.localhost.source.host }}"
@@ -86,11 +86,12 @@
         state=import
         single_transaction=yes
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
+      when: hostvars.localhost.source.database is defined or  hostvars.localhost.target.database is defined
     - name: "Synchroniser les informations manquantes depuis l'import initial"
       include: tasks/rsync.yml
       vars:
         source:
-          pass: "{{ hostvars.localhost.source.pass }}"
+          pass: "{{ hostvars.localhost.source.pass|default(omit) }}"
           port: "{{ hostvars.localhost.source.port }}"
           user: "{{ hostvars.localhost.source.user }}"
           host: "{{ hostvars.localhost.source.host }}"
