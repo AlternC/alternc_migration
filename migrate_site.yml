@@ -60,6 +60,7 @@
         config_file=/dev/null
         state=dump
         target=/tmp/{{ hostvars.localhost.source.database.name }}.sql
+      when: hostvars.localhost.source.database is defined
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - include: tasks/rsync.yml
@@ -72,10 +73,12 @@
           path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
         target:
           path: "/tmp/{{ hostvars.localhost.source.database.name }}.sql"
+      when: hostvars.localhost.source.database is defined
     - name: "Corriger les DEFINER SQL"
       command: sed -i 's#DEFINER.*DEFINER##g' /tmp/{{ hostvars.localhost.source.database.name }}.sql
       args:
         chdir: "/tmp/"
+      when: hostvars.localhost.target.database is defined
     - mysql_db: >
         config_file=""
         login_user={{ hostvars.localhost.target.database.user | default(hostvars.localhost.source.database.user) }}
@@ -108,6 +111,7 @@
       vars:
         path: "{{ hostvars.localhost.target.path | default(hostvars.localhost.source.path) }}"
         database: "{{ hostvars.localhost.source.database | combine(hostvars.localhost.target.database) }}"
+      when: hostvars.localhost.source.database is defined or hostvars.localhost.target.database is defined
       with_first_found:
         - files:
             - tasks/{{ hostvars.localhost.source.cms }}_db.yml
@@ -132,3 +136,7 @@
 
     - name: "Relancer apache"
       service: name=apache2 state=reloaded
+      when: ansible_distribution == 'Debian'
+    - name: "Relancer apache"
+      shell: /etc/init.d/apache2 restart
+      when: ansible_distribution == 'Ubuntu'
