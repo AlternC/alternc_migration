@@ -114,7 +114,7 @@
       when: hostvars.localhost.source.database is defined or hostvars.localhost.target.database is defined
       with_first_found:
         - files:
-            - tasks/{{ hostvars.localhost.source.cms }}_db.yml
+            - tasks/db/{{ hostvars.localhost.source.cms }}.yml
           skip: true
     - name: "Corriger les droits sur le repertoire"
       command: /usr/lib/alternc/fixperms.sh -l {{ hostvars.localhost.target.alternc }}

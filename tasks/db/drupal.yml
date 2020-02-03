@@ -1,0 +1,13 @@
+- name: Connexion à la nouvelle base de données
+  lineinfile:
+    dest: "{{ path }}/sites/default/settings.php"
+    regexp: "{{ rule.regexp }}"
+    line: "{{ rule.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: "^\s*'host'", line: "  'host' => '{{ database.host }}'," }
+    - { regexp: "^\s*'username'", line: "  'username' => '{{ database.user }}'," }
+    - { regexp: "^\s*'password'", line: "  'password' => '{{ database.pass }}'," }
+    - { regexp: "^\s*'database'", line: "  'database' => '{{ database.name }}'," }
+  loop_control:
+    loop_var: rule
