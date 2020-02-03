@@ -1,0 +1,13 @@
+- name: Connexion à la nouvelle base de données
+  lineinfile:
+    dest: "{{ path }}/conf/conf.php"
+    regexp: "{{ rule.regexp }}"
+    line: "{{ rule.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: "$dolibarr_main_db_host\s+=", line: "$dolibarr_main_db_host='{{ database.host }}';" }
+    - { regexp: "$dolibarr_main_db_user\s+=", line: "$dolibarr_main_db_user='{{ database.user }}';" }
+    - { regexp: "$dolibarr_main_db_pass\s+=", line: "$dolibarr_main_db_pass='{{ database.pass }}';" }
+    - { regexp: "$dolibarr_main_db_name\s+=", line: "$dolibarr_main_db_name='{{ database.name }}';" }
+  loop_control:
+    loop_var: rule
