@@ -1,8 +1,10 @@
 <VirtualHost *:80>
         ServerName {{ hostvars.localhost.source.domain }}
+{% if hostvars.localhost.source.alias is defined %}
 {% for alias in hostvars.localhost.source.alias %}
         ServerAlias {{ alias }}
 {% endfor %}
+{% endif %}
 
         ProxyPreserveHost On
         ProxyPass / http://{{ hostvars.localhost.target.host }}/
@@ -12,9 +14,11 @@
 {% if hostvars.localhost.source.ssl is defined %}
 <VirtualHost *:443>
         ServerName {{ hostvars.localhost.source.domain }}
+{% if hostvars.localhost.source.alias is defined %}
 {% for alias in hostvars.localhost.source.alias %}
         ServerAlias {{ alias }}
 {% endfor %}
+{% endif %}
 
         SSLEngine On
         SSLCertificateFile /etc/letsencrypt/live/{{ hostvars.localhost.source.domain }}/cert.pem
