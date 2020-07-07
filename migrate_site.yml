@@ -22,7 +22,7 @@
     - include: tasks/get_path.yml
       vars:
         domain: "{{ hostvars.localhost.source.domain }}"
-        alternc_user: "{{ hostvars.localhost.source.alternc|default(hostvars.localhost.target.alternc) }}"
+        alternc_user: "{{ hostvars.localhost.source.alternc }}"
       when: hostvars.localhost.source.path is undefined
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
@@ -34,7 +34,7 @@
     - include: tasks/get_path.yml
       vars:
         domain: "{{ hostvars.localhost.source.domain }}"
-        alternc_user: "{{ hostvars.localhost.target.alternc }}"
+        alternc_user: "{{ hostvars.localhost.target.alternc|default(hostvars.localhost.source.alternc) }}"
       when: hostvars.localhost.target.path is undefined
     - include: tasks/rsync.yml
       vars:
@@ -127,7 +127,7 @@
             - tasks/db/{{ hostvars.localhost.source.cms }}.yml
           skip: true
     - name: "Corriger les droits sur le repertoire"
-      command: /usr/lib/alternc/fixperms.sh -l {{ hostvars.localhost.target.alternc }}
+      command: /usr/lib/alternc/fixperms.sh -l {{ hostvars.localhost.target.alternc|default(hostvars.localhost.source.alternc) }}
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - stat:
