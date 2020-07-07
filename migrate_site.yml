@@ -49,12 +49,12 @@
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - name: "Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}"
-      copy: src=templates/maintenance.html dest={{ hostvars.localhost.source.path }}/maintenance.html
+      copy: src=templates/maintenance.html dest={{ hostvars.localhost.source.path|default(hostvars[hostvars.localhost.source.host]['path']) }}/maintenance.html
     - name: "Creer le htaccess si absent"
-      file: path={{ hostvars.localhost.source.path }}/.htaccess state=touch
+      file: path={{ hostvars.localhost.source.path|default(hostvars[hostvars.localhost.source.host]['path']) }}/.htaccess state=touch
     - name: "Activation de la maintenance"
       blockinfile:
-        dest: "{{ hostvars.localhost.source.path }}/.htaccess"
+        dest: "{{ hostvars.localhost.source.path|default(hostvars[hostvars.localhost.source.host]['path']) }}/.htaccess"
         block: |
           ErrorDocument 503 "Site en maintenance"
           RewriteEngine on
@@ -112,14 +112,13 @@
         target:
           path: "{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}/"
     - name: "Corriger tous les appels aux anciens chemin avec le nouveau"
-      command: find . -type f -exec sed -i 's#{{ hostvars.localhost.source.path }}/#{{ hostvars.localhost.target.path }}/#g' {} +
+      command: find . -type f -exec sed -i 's#{{ hostvars.localhost.source.path|default(hostvars[hostvars.localhost.source.host]['path']) }}/#{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}/#g' {} +
       args:
-        chdir: "{{ hostvars.localhost.target.path }}/"
-      when: hostvars.localhost.target.path is defined
+        chdir: "{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}/"
     - name: "Corriger la connexion a la db"
       include: "{{ item }}"
       vars:
-        path: "{{ hostvars.localhost.target.path | default(hostvars.localhost.source.path) }}"
+        path: "{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}"
         database: "{{ hostvars.localhost.source.database | combine(hostvars.localhost.target.database) }}"
       when: hostvars.localhost.source.database is defined or hostvars.localhost.target.database is defined
       with_first_found:
