@@ -9,7 +9,7 @@
         SELECT valeur
         FROM sub_domaines
         WHERE 1
-          AND type="vhost"
+          AND type like "vhost%"
           AND CONCAT(sub,".",domaine) = "{{ domain }}"
         LIMIT 1;'
       )
