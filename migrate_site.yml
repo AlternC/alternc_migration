@@ -19,6 +19,11 @@
       become: true
     - name: "Activer le mode proxy"
       apache2_module: state=present name=proxy_http
+    - include: tasks/get_path.yml
+      vars:
+        domain: "{{ hostvars.localhost.source.domain }}"
+        alternc_user: "{{ hostvars.localhost.source.alternc|default(hostvars.localhost.target.alternc) }}"
+      when: hostvars.localhost.source.path is undefined
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
@@ -26,16 +31,21 @@
       become: true
     - apt: name=sshpass update_cache=yes state=present
       become: true
+    - include: tasks/get_path.yml
+      vars:
+        domain: "{{ hostvars.localhost.source.domain }}"
+        alternc_user: "{{ hostvars.localhost.target.alternc }}"
+      when: hostvars.localhost.target.path is undefined
     - include: tasks/rsync.yml
       vars:
         source:
           pass: "{{ hostvars.localhost.source.pass|default(omit) }}"
-          port: "{{ hostvars.localhost.source.port }}"
+          port: "{{ hostvars.localhost.source.port|default(22) }}"
           user: "{{ hostvars.localhost.source.user }}"
           host: "{{ hostvars.localhost.source.host }}"
-          path: "{{ hostvars.localhost.source.path }}/"
+          path: "{{ hostvars.localhost.source.path|default(hostvars[hostvars.localhost.source.host]['path']) }}/"
         target:
-          path: "{{ hostvars.localhost.target.path | default(hostvars.localhost.source.path) }}"
+          path: "{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}/"
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - name: "Activer la maintenance sur le site {{ hostvars.localhost.source.domain }}"
@@ -98,9 +108,9 @@
           port: "{{ hostvars.localhost.source.port }}"
           user: "{{ hostvars.localhost.source.user }}"
           host: "{{ hostvars.localhost.source.host }}"
-          path: "{{ hostvars.localhost.source.path }}/"
+          path: "{{ hostvars.localhost.source.path|default(hostvars[hostvars.localhost.source.host]['path']) }}/"
         target:
-          path: "{{ hostvars.localhost.target.path | default(hostvars.localhost.source.path) }}"
+          path: "{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}/"
     - name: "Corriger tous les appels aux anciens chemin avec le nouveau"
       command: find . -type f -exec sed -i 's#{{ hostvars.localhost.source.path }}/#{{ hostvars.localhost.target.path }}/#g' {} +
       args:

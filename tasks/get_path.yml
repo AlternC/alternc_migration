@@ -1,0 +1,22 @@
+---
+# Retourner le path du domaine
+- name: "Get alternc path"
+  shell: >
+    source /usr/lib/alternc/functions.sh;
+    echo "
+      $(get_html_path_by_name {{ alternc_user|quote }})
+      $(mysql_query '
+        SELECT valeur
+        FROM sub_domaines
+        WHERE 1
+          AND type="vhost"
+          AND CONCAT(sub,".",domaine) = "{{ domain }}"
+        LIMIT 1;'
+      )
+    " | sed -e 's/\/\//\//g' | tr -d '\n'
+  args:
+    executable: /bin/bash
+  when: alternc_user is defined and domain is defined
+  register: path
+- set_fact:
+    path: "{{ path.stdout }}"
