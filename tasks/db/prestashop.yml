@@ -1,4 +1,4 @@
-- name: Connexion à la nouvelle base de données
+- name: "[PS16] Connexion à la nouvelle base de données"
   lineinfile:
     dest: "{{ path }}/config/settings.inc.php"
     regexp: "{{ rule.regexp }}"
@@ -11,3 +11,19 @@
     - { regexp: "_DB_NAME_", line: "define('_DB_NAME_', '{{ database.name }}');" }
   loop_control:
     loop_var: rule
+- name: "[PS17] Connexion à la nouvelle base de données"
+  lineinfile:
+    dest: "{{ path }}/app/config/parameters.php"
+    regexp: "{{ rule.regexp }}"
+    line: "{{ rule.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: "database_host", line: "    'database_host' => '{{ database.host }}'," }
+    - { regexp: "database_user", line: "    'database_user' => '{{ database.user }}'," }
+    - { regexp: "database_password", line: "    'database_password' => '{{ database.pass }}'," }
+    - { regexp: "database_name", line: "    'database_name' => '{{ database.name }}'," }
+  loop_control:
+    loop_var: rule
+  #https://github.com/ansible/ansible/issues/29914#issue-256902691
+  register: ps_config_exists
+  failed_when: ps_config_exists.rc not in [0, 257]
