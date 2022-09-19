@@ -118,13 +118,14 @@
     - name: "Corriger la connexion a la db"
       include: "{{ item }}"
       vars:
-        path: "{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}"
+        path: "{{ hostvars.localhost.target.path|default(hostvars[hostvars.localhost.target.host]['path']) }}{{ hostvars.localhost.source.cms_path|default('') }}"
         database: "{{ hostvars.localhost.source.database | combine(hostvars.localhost.target.database) }}"
       when: hostvars.localhost.source.database is defined or hostvars.localhost.target.database is defined
       with_first_found:
         - files:
             - tasks/db/{{ hostvars.localhost.source.cms }}.yml
           skip: true
+      ignore_errors: True>
     - name: "Corriger les droits sur le repertoire"
       command: /usr/lib/alternc/fixperms.sh -l {{ hostvars.localhost.target.alternc|default(hostvars.localhost.source.alternc) }}
 - hosts: "{{ hostvars.localhost.source.host }}"
