@@ -182,7 +182,7 @@
       template: src=templates/proxy.j2 dest=/etc/apache2/conf-enabled/000-proxy-{{ hostvars.localhost.source.domain }}.conf
       when: apache2confenabled.stat.isdir is defined and apache2confenabled.stat.isdir
     - name: "Relancer apache"
-      service: name=apache2 state=reloaded
+      shell: apache2ctl restart
       when: ansible_distribution == 'Debian'
     - name: "Relancer apache"
       shell: /etc/init.d/apache2 restart
