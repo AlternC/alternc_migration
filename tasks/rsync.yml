@@ -4,9 +4,8 @@
 # https://linuxcommando.blogspot.fr/2008/10/how-to-disable-ssh-host-key-checking.html
 - name: "Importer le repertoire/fichier depuis la source"
   command: "
-    {% if source.pass is defined and source.pass %} sshpass -p {{ source.pass }} {% endif %}
     rsync --partial -az --progress
-      -e 'ssh -p {{ source.port }} -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
+      -e 'ssh -a -p {{ source.port }} -o IdentityAgent=none -o IdentitiesOnly=yes -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i ~/.ssh/remote_id_rsa'
       {% if source.user is defined and source.user != 'root' %} --rsync-path='sudo rsync' {% endif %}
       {{ source.user }}@{{ source.host }}:{{ source.path }}
       {{ target.path }}

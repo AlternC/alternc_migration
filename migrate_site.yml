@@ -12,9 +12,27 @@
     - include: tasks/add_host.yml server={{ target }}
     - debug: msg="Migration de {{ source.domain }}"
     - pause: prompt="Are you sure to continue ? Press return to continue. Press Ctrl+c and then "a" to abort' "
+    - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+      community.crypto.openssh_keypair:
+        path: /tmp/remote_id_ssh_rsa
+        type: rsa
+        comment: "alternc migrator {{ source.host }} -- {{ target.host }}"
 - hosts: "{{ hostvars.localhost.source.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
+    - name: Copy the key from master to the destination
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: '600'
+      with_items:
+        - { src: "/tmp/remote_id_ssh_rsa", dest: "~/.ssh/remote_id_rsa"}
+        - { src: "/tmp/remote_id_ssh_rsa.pub", dest: "~/.ssh/remote_id_rsa.pub"}
+    - name: Add the public key into Authorized_keys file to source server
+      ansible.posix.authorized_key:
+        state: present
+        user: "{{ hostvars.localhost.source.user }}"
+        key: "{{ lookup('file', '/tmp/remote_id_ssh_rsa.pub') }}"
     - apt: name=python-mysqldb update_cache=yes state=present
       become: true
     - name: "Activer le mode proxy"
@@ -27,6 +45,24 @@
 - hosts: "{{ hostvars.localhost.target.host }}"
   tasks:
     - debug: msg="Connexion au serveur cible {{ ansible_host }}"
+    - name: Create .ssh directory
+      file:
+        path: ~/.ssh/
+        state: directory
+        mode: '700'
+    - name: Copy the key from master to the destination
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+        mode: '600'
+      with_items:
+        - { src: "/tmp/remote_id_ssh_rsa", dest: "~/.ssh/remote_id_rsa"}
+        - { src: "/tmp/remote_id_ssh_rsa.pub", dest: "~/.ssh/remote_id_rsa.pub"}
+    - name: Add the public key into Authorized_keys file to target server
+      ansible.posix.authorized_key:
+        state: present
+        user: "{{ hostvars.localhost.target.user }}"
+        key: "{{ lookup('file', '/tmp/remote_id_ssh_rsa.pub') }}"
     - apt: name=python-mysqldb update_cache=yes state=present
       become: true
     - apt: name=sshpass update_cache=yes state=present
