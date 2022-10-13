@@ -25,6 +25,10 @@
         SSLCertificateKeyFile /etc/letsencrypt/live/{{ hostvars.localhost.source.domain }}/privkey.pem
         SSLCertificateChainFile /etc/letsencrypt/live/{{ hostvars.localhost.source.domain }}/fullchain.pem
 
+#        SSLCertificateFile /etc/acmephp//{{ hostvars.localhost.source.domain }}/public/cert.pem
+#        SSLCertificateKeyFile /etc/acmephp//{{ hostvars.localhost.source.domain }}/private/key.private.pem
+#        SSLCertificateChainFile /etc/acmephp//{{ hostvars.localhost.source.domain }}/public/fullchain.pem
+
         SSLProxyEngine on
         SSLProxyVerify none
         SSLProxyCheckPeerCN off
