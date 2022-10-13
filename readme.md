@@ -44,6 +44,7 @@ In this sample, we want migrate a worpdress with a new database to same altenrc 
         alias: [ cdn.domain.tld ]
         ssl: true
         cms: wordpress
+        cms_path: htdocs
         host: old.alternc.tld
         port: 2121
         user: ssh_acccount
