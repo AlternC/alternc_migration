@@ -18,7 +18,7 @@ A simple *variable.yml* file could be set as :
         host: old.alternc.tld
         user: ssh_acccount
         key: /home/my/.ssh/id_rsa
-        alternc: alternc_account
+        path: /var/www/[...]/www/mywebsite/
         database:
             host: 127.0.0.1
             user: "database_user"
@@ -28,10 +28,9 @@ A simple *variable.yml* file could be set as :
         host: new.alternc.tld
         user: ssh_account
         key: /home/my/.ssh/id_rsa
+        path: /var/www/alternc/m/mywebsite/www/
         database:
-            user: "new_database_user"
             pass: "new_database_pass"
-            name: "new_database_name"
 
 In this sample, we want migrate a worpdress with a new database to same altenrc account.
 
@@ -41,17 +40,16 @@ In this sample, we want migrate a worpdress with a new database to same altenrc 
     ---
     source:
         domain: www.domain.tld
-        alias: [ cdn.domain.tld ]
-        ssl: true
+        #alias: [ cdn.domain.tld ]
+        #ssl: true
         cms: wordpress
-        cms_path: htdocs
+        #cms_path: htdocs
         host: old.alternc.tld
-        port: 2121
+        #port: 2121
         user: ssh_acccount
         pass: anypassword
         key: /home/my/.ssh/id_rsa
         path: /any/absolute/path/on/server
-        alternc: alternc_name if it's a an alternc server
         database:
             host: 127.0.0.1
             user: "database_user"
@@ -66,7 +64,7 @@ In this sample, we want migrate a worpdress with a new database to same altenrc 
         path: /any/absolute/path/on/server
         alternc: new_alternc_name
         database:
-            host: 127.0.0.1
-            user: "new_database_user"
+            #host: 127.0.0.1
+            #user: "new_database_user"
             pass: "new_database_pass"
-            name: "new_database_name"
+            #name: "new_database_name"
