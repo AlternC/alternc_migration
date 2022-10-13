@@ -11,6 +11,9 @@
     - { regexp: "_DB_NAME_", line: "define('_DB_NAME_', '{{ database.name }}');" }
   loop_control:
     loop_var: rule
+- ansible.builtin.stat:
+    path: "{{ path }}/app/config/parameters.php"
+  register: ps_config_exists
 - name: "[PS17] Connexion à la nouvelle base de données"
   lineinfile:
     dest: "{{ path }}/app/config/parameters.php"
@@ -25,5 +28,4 @@
   loop_control:
     loop_var: rule
   #https://github.com/ansible/ansible/issues/29914#issue-256902691
-  register: ps_config_exists
-  failed_when: ps_config_exists.rc not in [0, 257]
+  when: ps_config_exists.stat.exists
