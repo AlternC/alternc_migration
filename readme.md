@@ -44,6 +44,7 @@ In this sample, we want migrate a worpdress with a new database to same altenrc 
         #ssl: true
         cms: wordpress
         #cms_path: htdocs
+        #proxy: false|true (default true)
         host: old.alternc.tld
         #port: 2121
         user: ssh_acccount
