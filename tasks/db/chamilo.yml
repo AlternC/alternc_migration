@@ -1,0 +1,13 @@
+- name: Connexion à la nouvelle base de données
+  lineinfile:
+    dest: "{{ path }}/app/config/configuration.php"
+    regexp: "{{ rule.regexp }}"
+    line: "{{ rule.line }}"
+    backrefs: yes
+  with_items:
+    - { regexp: "^\\s*\\$_configuration\\['db_host'\\]\\s*=", line: "$_configuration['db_host'] = '{{ database.host }}';" }
+    - { regexp: "^\\s*\\$_configuration\\['db_user'\\]\\s*=", line: "$_configuration['db_user'] = '{{ database.user }}';" }
+    - { regexp: "^\\s*\\$_configuration\\['db_password'\\]\\s*=", line: "$_configuration['db_password'] = '{{ database.pass }}';" }
+    - { regexp: "^\\s*\\$_configuration\\['main_database'\\]\\s*=", line: "$_configuration['main_database'] = '{{ database.name }}';" }
+  loop_control:
+    loop_var: rule
